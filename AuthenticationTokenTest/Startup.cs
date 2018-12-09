@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Authentication;
 using Authentication.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,13 @@ namespace AuthenticationTokenTest
             services.AddTransient<IAuthenticationProcess, AuthenticationProcess>();
             services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
             services.AddCors();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+
+                        .AddJwtBearer(options =>
+                        {
+                            options.Authority = "http://localhost:61505/";
+                            options.Audience = "http://localhost:4200/";
+                        });
             services.AddMvc();
         }
 
@@ -46,6 +54,7 @@ namespace AuthenticationTokenTest
                 builder.AllowAnyOrigin();
                 builder.AllowCredentials();
             });
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
